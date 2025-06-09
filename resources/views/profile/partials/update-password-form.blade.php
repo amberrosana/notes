@@ -1,4 +1,16 @@
 <section>
+    @if (session('status') === 'password-updated')
+        <div 
+            x-data="{ show: true }"
+            x-show="show"
+            x-transition
+            x-init="setTimeout(() => show = false, 4000)"
+            class="mb-4 w-full rounded-lg border border-green-300 bg-green-100 px-4 py-3 text-sm font-medium text-green-800 shadow-md dark:border-green-600 dark:bg-green-900 dark:text-green-100"
+            role="alert"
+        >
+            ✅ Your password has been updated successfully.
+        </div>
+    @endif
     <header>
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
             {{ __('Update Password') }}

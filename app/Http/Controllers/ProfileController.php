@@ -26,15 +26,28 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $input = $request->validated();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $messages = [];
+
+        if ($user->name !== $input['name']) {
+            $user->name = $input['name'];
+            $messages[] = 'name';
         }
 
-        $request->user()->save();
+        if ($user->email !== $input['email']) {
+            $user->email = $input['email'];
+            $user->email_verified_at = null;
+            $messages[] = 'email';
+        }
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        if (!empty($messages)) {
+            $user->save();
+            return Redirect::route('profile.edit')->with('update_messages', $messages);
+        }
+
+        return Redirect::route('profile.edit');
     }
 
     /**
@@ -55,6 +68,6 @@ class ProfileController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+        return redirect()->route('login')->with('account_deleted', true);
     }
 }

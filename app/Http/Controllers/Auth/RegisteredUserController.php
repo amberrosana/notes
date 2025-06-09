@@ -33,7 +33,13 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        ],
+        [
+            'email.unique' => 'An account with this email already exists.',
+            'password.confirmed' => 'The password and confirmation do not match.',
+            'password.min' => 'The password must be at least 8 characters long.',
+        ]
+    );
 
         $user = User::create([
             'name' => $request->name,
@@ -45,6 +51,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('dashboard'))->with('registered', true);
     }
 }
